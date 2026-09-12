@@ -67,16 +67,36 @@ pipeline {
     }
 
     post {
-        success {
-            ech 'Terraform deployment completed successfully.'
-        }
-
-        failure {
-            echo 'Terraform deployment failed.'
-        }
-
-        aborted {
-            echo 'Terraform deployment was aborted.'
-        }
+    success {
+        echo 'Terraform deployment completed successfully.'
     }
+
+    failure {
+        echo 'Terraform deployment failed.'
+
+        emailext(
+            to: 'YOUR_EMAIL@example.com',
+            subject: "[Jenkins] FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
+Pipeline: ${env.JOB_NAME}
+Build Number: #${env.BUILD_NUMBER}
+Environment: ${env.ENVIRONMENT}
+Status: ${currentBuild.currentResult}
+
+Console Output:
+${env.BUILD_URL}console
+
+Build URL:
+${env.BUILD_URL}
+
+The Jenkins console log is attached to this email.
+            """,
+            attachLog: true
+        )
+    }
+
+    aborted {
+        echo 'Terraform deployment was aborted.'
+    }
+}
 }
