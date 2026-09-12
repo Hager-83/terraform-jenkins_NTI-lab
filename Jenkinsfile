@@ -68,7 +68,7 @@ pipeline {
 
     post {
     success {
-        echo 'Terraform deployment completed successfully.'
+        ech 'Terraform deployment completed successfully.'
     }
 
     failure {
